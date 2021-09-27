@@ -1,6 +1,7 @@
 {
     "pluginAlias": "HomebridgeTerneoHeatFloorV2",
     "pluginType": "accessory",
+    "singular": false,
     "schema": {
         "type": "object",
         "properties": {
@@ -15,6 +16,11 @@
                 "type": "string",
                 "required": true,
                 "format": "hostname"
+            },
+            "serial": {
+                "title": "Serial number",
+                "type": "string",
+                "required": true
             }
         }
     }
