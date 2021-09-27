@@ -1,0 +1,21 @@
+{
+    "pluginAlias": "HomebridgeTerneoHeatFloorV2",
+    "pluginType": "accessory",
+    "schema": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "title": "Name",
+                "type": "string",
+                "default": "Terneo heat floor",
+                "required": true
+            },
+            "host": {
+                "title": "IP Address / Hostname",
+                "type": "string",
+                "required": true,
+                "format": "hostname"
+            }
+        }
+    }
+}

@@ -1,39 +1,39 @@
 {
-    "name": "homebridge-terneo-heatfloor-v2",
-    "version": "1.0.0",
-    "description": "An example accessory plugin for homebridge written in Typescript",
-    "main": "dist/accessory.js",
-    "scripts": {
-        "clean": "rimraf ./dist",
-        "build": "rimraf ./dist && tsc",
-        "postpublish": "npm run clean",
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "lint": "eslint src/**.ts --max-warnings=0",
-        "watch": "npm run build && npm link && nodemon",
-        "prepublishOnly": "npm run lint && npm run build"
-    },
-    "author": "Mykola Diachok <ndyachok@gmail.com>",
-    "engines": {
-        "homebridge": ">=1.0.0"
-    },
-    "keywords": [
-        "homebridge-plugin"
-    ],
-    "license": "ISC",
-    "files": [
-        "LICENSE",
-        "dist"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/MykolaDiachok/homebridge-terneo-heatfloor-v2.git"
-    },
-    "bugs": {
-        "url": "http://github.com/MykolaDiachok/homebridge-terneo-heatfloor-v2/issues"
-    },
-    "devDependencies": {
-        "@types/node": "10.17.19",
-        "homebridge": "^1.1.6",
-        "rimraf": "^3.0.2"
-    }
+  "name": "homebridge-terneo-heatfloor-v2",
+  "version": "1.0.0",
+  "description": "An example accessory plugin for homebridge written in Typescript",
+  "main": "dist/index.js",
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "rimraf ./dist && tsc",
+    "postpublish": "npm run clean",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src/**.ts --max-warnings=0",
+    "watch": "npm run build && npm link && nodemon",
+    "prepublishOnly": "npm run lint && npm run build"
+  },
+  "author": "Mykola Diachok <ndyachok@gmail.com>",
+  "engines": {
+    "homebridge": ">=1.0.0"
+  },
+  "keywords": [
+    "homebridge-plugin"
+  ],
+  "license": "ISC",
+  "files": [
+    "LICENSE",
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/MykolaDiachok/homebridge-terneo-heatfloor-v2.git"
+  },
+  "bugs": {
+    "url": "http://github.com/MykolaDiachok/homebridge-terneo-heatfloor-v2/issues"
+  },
+  "devDependencies": {
+    "@types/node": "10.17.19",
+    "homebridge": "^1.1.6",
+    "rimraf": "^3.0.2"
+  }
 }
