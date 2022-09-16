@@ -1,5 +1,5 @@
-export const ACCESSORY_NAME = 'HomebridgeTerneoHeatFloorV2'
+export const ACCESSORY_NAME = 'HomebridgeTerneoHeatFloorV2';
 
-export const MANU_FACTURER = 'homebridge Terneo'
+export const MANUFACTURER = 'Homebridge Terneo';
 
-export const MODEL = 'Terneo SX'
+export const MODEL = 'Terneo SX';

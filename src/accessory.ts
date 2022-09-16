@@ -1,120 +1,144 @@
-import {
-    AccessoryConfig,
-    AccessoryPlugin,
-    API,
-    Logging,
-    Service,
-    CharacteristicValue
-} from "homebridge";
-import { MANU_FACTURER, MODEL } from './settings';
-import superagent from "superagent";
+import { AccessoryConfig, AccessoryPlugin, API, CharacteristicValue, Logging, Service } from 'homebridge';
+import { MANUFACTURER, MODEL } from './settings';
+import { TerneoHeatFloorAccessoryConfig } from './terneoHeatFloorAccessoryConfig';
 
+export default class TerneoHeatFloor implements AccessoryPlugin {
+	private readonly log: Logging;
 
+	private readonly name: string;
 
+	private config: TerneoHeatFloorAccessoryConfig;
 
-export interface TerneoHeatFloorAccessoryConfig extends AccessoryConfig {
-    host: string;
-    serial: string;
-}
+	private api: API;
 
-export class ExampleSwitch implements AccessoryPlugin {
+	private readonly informationService: Service;
 
-    private readonly log: Logging;
-    private readonly name: string;
-    private config: TerneoHeatFloorAccessoryConfig;
-    private api: API;
+	private readonly thermostatService: Service;
 
-    private informationService: Service;
-    private switchService: Service;
+	private Characteristic;
 
-    constructor(log: Logging, config: AccessoryConfig, api: API) {
-        this.log = log;
-        this.name = config.name;
-        this.config = config as TerneoHeatFloorAccessoryConfig;
-        this.api = api;
+	constructor(log: Logging, config: AccessoryConfig, api: API) {
+		this.log = log;
+		this.name = config.name;
+		this.config = config as TerneoHeatFloorAccessoryConfig;
+		this.api = api;
+		this.Characteristic = this.api.hap.Characteristic;
 
+		this.informationService = new api.hap.Service.AccessoryInformation()
+			.setCharacteristic(api.hap.Characteristic.Manufacturer, MANUFACTURER)
+			.setCharacteristic(api.hap.Characteristic.Model, MODEL)
+			.setCharacteristic(api.hap.Characteristic.SerialNumber, this.config.serial);
 
+		this.thermostatService = new this.api.hap.Service.Thermostat(this.config.name);
+		// this.thermostatService.getCharacteristic(this.api.hap.Characteristic.On)
+		//     .onSet(this.setOn.bind(this))                // SET - bind to the `setOn` method below
+		//               // GET - bind to the `getOn` method below
 
-        this.informationService = new api.hap.Service.AccessoryInformation()
-            .setCharacteristic(api.hap.Characteristic.Manufacturer, MANU_FACTURER)
-            .setCharacteristic(api.hap.Characteristic.Model, MODEL)
-            .setCharacteristic(api.hap.Characteristic.SerialNumber, this.config.serial);
+		// create handlers for required characteristics
+		this.thermostatService
+			.getCharacteristic(this.Characteristic.CurrentHeatingCoolingState)
+			.onGet(this.handleCurrentHeatingCoolingStateGet.bind(this));
 
+		this.thermostatService
+			.getCharacteristic(this.Characteristic.TargetHeatingCoolingState)
+			.onGet(this.handleTargetHeatingCoolingStateGet.bind(this))
+			.onSet(this.handleTargetHeatingCoolingStateSet.bind(this));
 
-        this.switchService = new this.api.hap.Service.Switch(this.config.name);
-        this.switchService.getCharacteristic(this.api.hap.Characteristic.On)
-            .onSet(this.setOn.bind(this))                // SET - bind to the `setOn` method below
-            .onGet(this.getOn.bind(this));               // GET - bind to the `getOn` method below
+		this.thermostatService.getCharacteristic(this.Characteristic.CurrentTemperature).onGet(this.handleCurrentTemperatureGet.bind(this));
 
-        log.info("Switch finished initializing!");
-        log.info("host:" + this.config.host);
-        log.info("serial:" + this.config.serial);
-        this.status = false;
-    }
+		this.thermostatService
+			.getCharacteristic(this.Characteristic.TargetTemperature)
+			.onGet(this.handleTargetTemperatureGet.bind(this))
+			.onSet(this.handleTargetTemperatureSet.bind(this));
 
-    private status: boolean;
+		this.thermostatService
+			.getCharacteristic(this.Characteristic.TemperatureDisplayUnits)
+			.onGet(this.handleTemperatureDisplayUnitsGet.bind(this))
+			.onSet(this.handleTemperatureDisplayUnitsSet.bind(this));
 
-    setOn(value: CharacteristicValue) {
-        // implement your own code to turn your device on/off
-        // this.exampleStates.On = value as boolean;
-        this.status = value as boolean;
-        let url = 'http://' + this.config.host + '/api.cgi';
-        this.log.debug('http->', url);
-        const prepareBody = {
-            sn: this.config.serial,
-            par: [[125, 7, Number(!value).toString()]]
-        };
-        this.log.debug('prepare body->', prepareBody);
+		log.info('Terneo floor finished initializing!');
+		log.info(`host:${this.config.host}`);
+		log.info(`serial:${this.config.serial}`);
+		this.status = false;
+	}
 
-        superagent
-            .post(url)
-            .send(prepareBody)
-            .timeout(5000)
-            .then((res) => {
-                this.log.debug('response:', res.body)
-                this.log.debug('status:', res.status)
-                if (res.status === 200) {
-                    var parms: Array<Array<{ param: number, type: number, value: string }>> = [[125, 7, "0"], [5, 1, "27"]];
-                }
-            })
-            .catch((error) => {
-                this.log.error('Error:', error.message)
-            });
+	private status: boolean;
 
-        // const response = await fetch(this.config.host + '/api.cgi', {
-        //     method: 'get',
-        //     body: body,
-        //     headers: { 'Content-Type': 'application/json' }
-        // });
-        // const data = await response.json();
-        //this.log.debug('response:', data);
-        this.log.debug('Set Characteristic On ->', this.status);
-    }
+	handleCurrentHeatingCoolingStateGet() {
+		this.log.debug('Triggered GET CurrentHeatingCoolingState');
 
+		// set this to a valid value for CurrentHeatingCoolingState
+		const currentValue = this.Characteristic.CurrentHeatingCoolingState.OFF;
 
-    getOn() {
-        // implement your own code to check if the device is on
-        // const isOn = this.exampleStates.On;
+		return currentValue;
+	}
 
-        this.log.debug('Get Characteristic On ->', this.status);
+	handleTargetHeatingCoolingStateGet() {
+		this.log.debug('Triggered GET TargetHeatingCoolingState');
 
-        return this.status;
-    }
+		// set this to a valid value for TargetHeatingCoolingState
+		const currentValue = this.Characteristic.TargetHeatingCoolingState.OFF;
 
-    /*
-     * This method is optional to implement. It is called when HomeKit ask to identify the accessory.
-     * Typical this only ever happens at the pairing process.
-     */
-    identify(): void {
-        this.log("Identify!");
-    }
+		return currentValue;
+	}
 
-    /*
-     * This method is called directly after creation of this instance.
-     * It should return all services which should be added to the accessory.
-     */
-    getServices(): Service[] {
-        return [this.switchService, this.informationService];
-    }
+	handleTargetHeatingCoolingStateSet(value: CharacteristicValue) {
+		this.log.debug('Triggered SET TargetHeatingCoolingState:', value);
+	}
 
+	handleCurrentTemperatureGet() {
+		this.log.debug('Triggered GET CurrentTemperature');
+
+		// set this to a valid value for CurrentTemperature
+		const currentValue = -270;
+
+		return currentValue;
+	}
+
+	/**
+	 * Handle requests to get the current value of the "Target Temperature" characteristic
+	 */
+	handleTargetTemperatureGet() {
+		this.log.debug('Triggered GET TargetTemperature');
+
+		// set this to a valid value for TargetTemperature
+		const currentValue = 10;
+
+		return currentValue;
+	}
+
+	/**
+	 * Handle requests to set the "Target Temperature" characteristic
+	 */
+	handleTargetTemperatureSet(value: CharacteristicValue) {
+		this.log.debug('Triggered SET TargetTemperature:', value);
+	}
+
+	/**
+	 * Handle requests to get the current value of the "Temperature Display Units" characteristic
+	 */
+	handleTemperatureDisplayUnitsGet() {
+		this.log.debug('Triggered GET TemperatureDisplayUnits');
+
+		// set this to a valid value for TemperatureDisplayUnits
+		const currentValue = this.Characteristic.TemperatureDisplayUnits.CELSIUS;
+
+		return currentValue;
+	}
+
+	handleTemperatureDisplayUnitsSet(value: CharacteristicValue) {
+		this.log.debug('Triggered SET TemperatureDisplayUnits:', value);
+	}
+
+	identify(): void {
+		this.log('Identify!');
+	}
+
+	/*
+	 * This method is called directly after creation of this instance.
+	 * It should return all services which should be added to the accessory.
+	 */
+	getServices(): Service[] {
+		return [this.thermostatService, this.informationService];
+	}
 }
