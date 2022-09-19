@@ -1,4 +1,6 @@
 export default class HeaterState {
+	serialNumber?: string;
+
 	// 7 (bool)	powerOff	power off
 	powerOff?: boolean;
 
@@ -169,4 +171,16 @@ export default class HeaterState {
 
 	// 0	6 (uint32)	startAwayTime	in seconds from 01.01.2000, away start time
 	startAwayTime?: number;
+
+	//	t.1 - temperature is 1/16 °C - floor
+	currentTemperature?: number;
+
+	//	t.5 - temperature is 1/16 °C - current setting
+	targetTemperature?: number;
+
+	// f.0 - bit parameters load status
+	warming?: boolean;
+
+	// m.3 - blocking type: no blocking = 0, blocking changes from the cloud = 1, blocking changes from the local network = 2, both = 3
+	blockingType?: number;
 }

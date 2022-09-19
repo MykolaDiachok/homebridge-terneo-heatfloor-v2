@@ -1,40 +1,23 @@
-import superagent from 'superagent';
-import Protocol from './models/protocol';
-
-// const prepareBody = {
-//     sn: '',
-//     par: [[125, 7, Number(!value).toString()]]
-// };
+import HttpClient from './services/http-client';
+import ProtocolCommand1 from './models/protocol-command1';
+import PrepareState from './services/prepare-state';
+import { BodyType4 } from './models/i-protocol-command4';
 
 async function getState() {
 	const preparedBody = { cmd: 1 };
 	console.log('prepare body->', preparedBody);
-	let returnValue = 'Unknown';
-	await superagent
-		.post('http://192.168.1.68/api.cgi')
-		.send(preparedBody)
-		.timeout(5000)
-		.then((res) => {
-			console.log(res.text);
-			const resp = new Protocol(res.body);
 
-			const params = resp.par.filter((x) => x.parNumber === 125);
-			if (res.status !== 200 || params.length === 0) {
-				returnValue = 'Unknown';
-			}
+	const returnValue = 'Unknown';
 
-			if (resp.state.powerOff) {
-				returnValue = 'Off';
-			} else {
-				returnValue = 'On';
-			}
-		})
-		.catch((error) => {
-			console.error('Error:', error.message);
-		});
-	return returnValue;
+	const client = new HttpClient('192.168.1.68');
+	const res1 = await client.Post(preparedBody);
+
+	const preparedBody4 = { cmd: 4 };
+	console.log('prepare body->', preparedBody4);
+	const res4 = await client.Post(preparedBody4);
+
+	const state = PrepareState.getDefaultState(new ProtocolCommand1(res1), <BodyType4>res4);
+	return state;
 }
 
-getState().then((x) => {
-	console.log('State:', x);
-});
+getState().then((x) => console.log('result:', x));
