@@ -1,23 +1,25 @@
+import InterchangeBuilder from './services/interchange-builder';
+import HeaterState from './models/heater-state';
 import HttpClient from './services/http-client';
-import ProtocolCommand1 from './models/protocol-command1';
-import PrepareState from './services/prepare-state';
-import { BodyType4 } from './models/i-protocol-command4';
 
-async function getState() {
-	const preparedBody = { cmd: 1 };
-	console.log('prepare body->', preparedBody);
-
-	const returnValue = 'Unknown';
-
-	const client = new HttpClient('192.168.1.68');
-	const res1 = await client.Post(preparedBody);
-
-	const preparedBody4 = { cmd: 4 };
-	console.log('prepare body->', preparedBody4);
-	const res4 = await client.Post(preparedBody4);
-
-	const state = PrepareState.getDefaultState(new ProtocolCommand1(res1), <BodyType4>res4);
-	return state;
+async function getInterchange() {
+	return new InterchangeBuilder().setHttpClient(new HttpClient('192.168.1.66')).build();
+}
+async function setOn() {
+	const ex = await getInterchange();
+	await ex.setOn();
+	const result = await ex.getDeviceState();
+	return <HeaterState>result;
+}
+async function setOff() {
+	const ex = await getInterchange();
+	await ex.setOff();
+	const result = await ex.getDeviceState();
+	return <HeaterState>result;
 }
 
-getState().then((x) => console.log('result:', x));
+setOff().then((x) => {
+	console.log('result:', x);
+	// setOff().then((y) => console.log('result:', y));
+});
+//

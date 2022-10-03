@@ -32,22 +32,22 @@
     "url": "https://github.com/MykolaDiachok/homebridge-terneo-heatfloor-v2/issues"
   },
   "devDependencies": {
-    "@types/node": "^18.7.18",
-    "@types/superagent": "^4.1.15",
-    "@typescript-eslint/eslint-plugin": "^5.13.0",
-    "@typescript-eslint/parser": "^5.0.0",
-    "eslint": "8.22.0",
-    "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "homebridge": "^1.5.0",
-    "prettier": "2.7.1",
-    "rimraf": "^3.0.2",
-    "ts-node": "^10.9.1",
-    "tslib": "^2.4.0",
-    "typescript": "^4.8.3"
+    "@types/node": "~18.8.0",
+    "@types/superagent": "~4.1.15",
+    "@typescript-eslint/eslint-plugin": "~5.38.1",
+    "@typescript-eslint/parser": "~5.38.1",
+    "eslint": "~8.24.0",
+    "eslint-config-airbnb-typescript": "~17.0.0",
+    "eslint-config-prettier": "~8.5.0",
+    "eslint-plugin-prettier": "~4.2.1",
+    "homebridge": "~1.5.0",
+    "prettier": "~2.7.1",
+    "rimraf": "~3.0.2",
+    "ts-node": "~10.9.1",
+    "tslib": "~2.4.0",
+    "typescript": "~4.8.4"
   },
   "dependencies": {
-    "superagent": "^8.0.0"
+    "superagent": "~8.0.2"
   }
 }

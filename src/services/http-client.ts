@@ -8,11 +8,14 @@ export default class HttpClient {
 		this.fullUrl = `http://${url}/api.cgi`;
 	}
 
-	public async Post(preparedBody: string | object): Promise<object> {
+	async Post(preparedBody: string | object): Promise<any> {
 		return superagent
 			.post(this.fullUrl)
 			.send(preparedBody)
 			.timeout(5000)
-			.then((x) => Promise.resolve(x.body));
+			.then((x) => Promise.resolve(x.body))
+			.catch((x) => {
+				throw new Error(x);
+			});
 	}
 }
